@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->  
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->  
+<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->  
+<head>
+    <title>TempChannels - Temporary Discord Channels</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">    
+    <link rel="shortcut icon" href="favicon.ico">  
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,300italic,400italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'> 
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Plugins CSS -->    
+    <link rel="stylesheet" href="assets/plugins/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
+    <!-- Theme CSS -->  
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head> 
+
+<body data-spy="scroll">
+    
+    <!-- ******HEADER****** --> 
+    <header id="header" class="header">  
+        <div class="container">            
+            <h1 class="logo pull-left">
+                <a class="scrollto" href="#promo">
+                    <span class="logo-title">TempChannels</span>
+                </a>
+            </h1><!--//logo-->              
+            <nav id="main-nav" class="main-nav navbar-right" role="navigation">
+                <div class="navbar-header">
+                    <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button><!--//nav-toggle-->
+                </div><!--//navbar-header-->            
+                <div class="navbar-collapse collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active nav-item sr-only"><a class="scrollto" href="#promo">Home</a></li>
+                        <li class="nav-item"><a class="scrollto" href="#about">About</a></li>
+                        <li class="nav-item"><a class="scrollto" href="#features">Quick Start</a></li>
+                        <li class="nav-item"><a class="scrollto" href="#docs">Commands</a></li>
+						<li class="nav-item"><a class="scrollto" href="#source">Source</a></li> 
+                        <li class="nav-item"><a class="scrollto" href="#support">Support</a></li>                        
+                        <li class="nav-item last"><a class="scrollto" href="#contact">Contact</a></li>
+                    </ul><!--//nav-->
+                </div><!--//navabr-collapse-->
+            </nav><!--//main-nav-->
+        </div>
+    </header><!--//header-->
+    
+    <!-- ******PROMO****** -->
+    <section id="promo" class="promo section offset-header">
+        <div class="container text-center">
+            <h2 class="title">Temp<span class="highlight">Channels</span></h2>
+            <p class="intro">Temporary voice channels for Discord! <br> Just like in the good old TeamSpeak times. </p>
+            <div class="btns">
+                <a class="btn btn-cta-secondary" href="https://discordapp.com/oauth2/authorize?client_id=367665720055824384&scope=bot&permissions=8" target="_blank">Invite</a>
+                <a class="btn btn-cta-primary" href="" target="_blank">Join Server</a>
+            </div>
+            <ul class="meta list-inline">
+                <li><a href="https://github.com/iTubeGamer/DiscordBots/tree/master/TemporaryChannel" target="_blank">View on GitHub</a></li>
+                <li>Created by: <a href="https://www.maxkroner.de/" target="_blank">Max Kroner</a></li>
+            </ul><!--//meta-->
+        </div><!--//container-->
+        <div class="social-media">
+            <div class="social-media-inner container text-center">
+                <ul class="list-inline">
+                    <li><a href="https://discordbots.org/bot/367665720055824384"><img src="https://discordbots.org/api/widget/status/367665720055824384.svg?noavatar=true"" /></a></li>             
+                    <li><a href="https://discordbots.org/bot/367665720055824384"><img src="https://discordbots.org/api/widget/lib/367665720055824384.svg?noavatar=true"" /></a></li>
+					<li><a href="https://discordbots.org/bot/367665720055824384"><img src="https://discordbots.org/api/widget/upvotes/367665720055824384.svg?noavatar=true"" /></a></li>
+					<li><a href="https://discordbots.org/bot/367665720055824384"> <img src="https://discordbots.org/api/widget/owner/367665720055824384.svg?noavatar=true" /></a></li>
+                </ul>
+            </div>
+        </div>
+    </section><!--//promo-->
+    
+    <!-- ******ABOUT****** --> 
+    <section id="about" class="about section">
+        <div class="container">
+            <h2 class="title text-center">Why use TempChannels?</h2>
+            <p class="intro text-center">TempChannels enables your server visitors to create their own temporary voice channels. This way everyone can manage his very own channel without needing server rights. To keep the server clean, the number of channels are limited per user and empty channels will be deleted after a few minutes. </p>
+            <div class="row">
+                <div class="item col-md-4 col-sm-6 col-xs-12">
+                    <div class="icon-holder">
+                        <i class="fa fa-lock"></i>
+                    </div>
+                    <div class="content">
+                        <h3 class="sub-title">Private channel</h3>
+                        <p>Decide who may join your channel and who may not. Especially usefull during ranked games.</p>
+                    </div><!--//content-->
+                </div><!--//item-->
+                <div class="item col-md-4 col-sm-6 col-xs-12">
+                    <div class="icon-holder">
+                        <i class="fa fa-clock-o"></i>
+                    </div>
+                    <div class="content">
+                        <h3 class="sub-title">Fast commands</h3>
+                        <p>Thanks to short and easy-to-use commands you can create and manage a channel within seconds!</p>
+                    </div><!--//content-->
+                </div><!--//item-->
+                <div class="item col-md-4 col-sm-6 col-xs-12">
+                    <div class="icon-holder">
+                        <i class="fa fa-code"></i>
+                    </div>
+                    <div class="content">
+                        <h3 class="sub-title">Customizable prefix</h3>
+                        <p>The standard prefix "!" may interfer with other bots. Therefore you can choose your own prefix.</p>
+                    </div><!--//content-->
+                </div><!--//item-->           
+                <div class="clearfix visible-md"></div>    
+                <div class="item col-md-4 col-sm-6 col-xs-12">
+                    <div class="icon-holder">
+                        <i class="fa fa-history"></i>
+                    </div>
+                    <div class="content">
+                        <h3 class="sub-title">Clean server</h3>
+                        <p>All temporary channels are put into an own category so your server stays nice and tidy. Empty channels are deleted automatically.</p>
+                    </div><!--//content-->
+                </div><!--//item-->                
+                <div class="item col-md-4 col-sm-6 col-xs-12">
+                    <div class="icon-holder">
+                        <i class="fa fa-list"></i>
+                    </div>
+                    <div class="content">
+                        <h3 class="sub-title">Disable Commands</h3>
+                        <p>Every single command can be disabled. This way the bot can meet the diffrent demands on every server.</p>
+                    </div><!--//content-->
+                </div><!--//item-->
+                <div class="item col-md-4 col-sm-6 col-xs-12">
+                    <div class="icon-holder">
+                        <i class="fa fa-heart"></i>
+                    </div>
+                    <div class="content">
+                        <h3 class="sub-title">Enjoy gaming</h3>
+                        <p>No need to get bothered by trolls. Thanks to channel-specific ban and kick commands you can enjoy your gaming session.</p>
+                    </div><!--//content-->
+                </div><!--//item-->               
+            </div><!--//row-->            
+        </div><!--//container-->
+    </section><!--//about-->
+    
+    <!-- ******QUICK START****** --> 
+    <section id="features" class="features section">
+        <div class="container text-center">
+            <h2 class="title">Quick Start Guide</h2>
+			<div id="list-wrapper">
+				<ul class="feature-list list-unstyled text-left">
+					<li><a class="guide btn btn-cta-secondary" href="https://discordapp.com/oauth2/authorize?client_id=367665720055824384&scope=bot&permissions=8" target="_blank">Invite</a> TempChannels to your server</li>
+					<li><i class="fa fa-angle-right"></i> Check that the bot has sufficient rights to create and manage a channel</li>
+					<li><i class="fa fa-angle-right"></i> Use <code>!c</code> to create a new TempChannel</li>
+					<li><i class="fa fa-angle-right"></i> Use <code>!kick</code> and <code>!ban</code> in your TempChannel to remove unwanted guests</li>
+					<li><i class="fa fa-angle-right"></i> Use <code>!cc</code> to delete all your TempChannels</li>
+					<li><i class="fa fa-angle-right"></i> Use <code>!help</code> for everything else</li>
+					<li><i class="fa fa-heart heart"></i> Enjoy your Discord experience</li>
+				</ul>
+			</div>
+        </div><!--//container-->
+    </section><!--//features-->
+    
+    <!-- ******COMMANDS****** --> 
+    <section id="docs" class="docs section">
+        <div class="container">
+            <div class="docs-inner">
+            <h2 class="title text-center">Command List</h2>
+			  <div class="block">
+                <h3 class="sub-title">General</h3>
+                <ul class="command-properties list-unstyled">
+                    <li><strong>Command:</strong> <code>!help</code></li>
+					<li><strong>Description:</strong> Links to this page.</li>
+                </ul>
+				 <ul class="command-properties list-unstyled">
+                    <li><strong>Command:</strong> <code>!ping</code></li>
+					<li><strong>Description:</strong> Shows ping to the server.</li>
+                </ul>
+				 <ul class="command-properties list-unstyled">
+                    <li><strong>Command:</strong> <code>!status</code></li>
+					<li><strong>Description:</strong> Shows some general status info, like runtime etc.</li>
+                </ul>
+            </div><!--//block-->
+            <div class="block">
+                <h3 class="sub-title">Bot Customization</h3>
+                <p>Use the following commands to customize your bot behaviour.</p>
+                <ul class="command-properties list-unstyled">
+                    <li><strong>Command:</strong> <code>!prefix &ltnew prefix&gt</code></li>
+					<li><strong>Description:</strong> Change the prefix used to identify commands. <code>!</code> is the standard prefix.</li>
+                    <li><strong>Aliases:</strong> <code>p</code></li>
+                </ul>
+				 <ul class="command-properties list-unstyled">
+                    <li><strong>Command:</strong> <code>!disable &ltcommand&gt</code></li>
+					<li><strong>Description:</strong> Disable the specified command on this server.</li>
+                    <li><strong>Aliases:</strong> <code>d</code>, <code>deactivate</code></li>
+                </ul>
+				 <ul class="command-properties list-unstyled">
+                    <li><strong>Command:</strong> <code>!enable &ltcommand&gt</code></li>
+					<li><strong>Description:</strong> Enable the specified command on this server.</li>
+                    <li><strong>Aliases:</strong> <code>e</code>, <code>activate</code></li>
+                </ul>
+            </div><!--//block-->
+            
+            <div class="block">
+                <h3 class="sub-title">Channel Creation</h3>
+				<ul class="command-properties list-unstyled">
+                    <li><strong>Command:</strong> <code>!channel [option] [option] ...</code></li>
+					<li><strong>Description:</strong> Create a new TempChannel. Configure your TempChannel with the available options.</li>
+                    <li><strong>Aliases:</strong> <code>c</code>, <code>create</code>, <code>new</code></li>
+                </ul>
+
+				<div class="options-table col-lg-8 col-md-10 col-sm-12 col-xs-12">
+					<table class="table table-striped">
+					<tbody>
+						<tr>
+						<th scope="row">option name</th>
+						<td><strong>syntax</strong></td>
+						<td><strong>description</strong></td>
+						</tr>
+						<td>channel name</td>
+						<td><code>-n &ltname&gt</code></td>
+						<td>give your TempChannel a name</td>
+						<tr>
+						<td>private channel</td>
+						<td><code>-p @User1 [@User2 ...]</code></td>
+						<td>only the mentioned user(s) may join</td>
+						</tr>
+						<tr>
+						<td>move</td>
+						<td><code>-m @User1 [@User2 ...]</code></td>
+						<td>move the metioned user(s) into the new channel</td>
+						</tr>
+						<tr>
+						<td>timeout</td>
+						<td><code>-t &ltx&gt</code></td>
+						<td>delete channel after being <code>&ltx&gt</code> minutes empty</td>
+						</tr>
+						<tr>
+						<td>limit</td>
+						<td><code>-l &ltx&gt</code></td>
+						<td>set user limit to <code>&ltx&gt</code></td>
+						</tr>
+					</tbody>
+					</table>
+				</div>
+                
+				<ul class="list-unstyled">
+					<li><strong>Example 1:</strong> <code>!channel -n "my channel"</code></li>
+					<li><strong>Example 2:</strong> <code>!c -m @UserName -n "my channel" -l 10</code> </li>
+                </ul>
+				
+            </div><!--//block-->
+            
+            <div class="block">
+                <h3 class="sub-title">Channel Management</h3>
+                <p>Use the following commands to modify existing TempChannels.</p>
+				<ul class="command-properties list-unstyled">
+                    <li><strong>Command:</strong> <code>!kick @User1 [@User2 ...]</code></li>
+					<li><strong>Description:</strong> Moves the mentioned user(s) out of the TempChannel you're currently in.</li>
+                    <li><strong>Aliases:</strong> <code>k</code></li>
+                </ul>
+				<ul class="command-properties list-unstyled">
+                    <li><strong>Command:</strong> <code>!ban @User1 [@User2 ...]</code></li>
+					<li><strong>Description:</strong> The mentioned user(s) get kicked an their rights to join your channel get removed.</li>
+                    <li><strong>Aliases:</strong> <code>b</code>, <code>deny</code>, <code>remove</code></li>
+                </ul>
+				<ul class="command-properties list-unstyled">
+                    <li><strong>Command:</strong> <code>!unban @User1 [@User2 ...]</code></li>
+					<li><strong>Description:</strong> Allow the mentioned user(s) to join your channel.</li>
+                    <li><strong>Aliases:</strong> <code>ub</code>, <code>allow</code>, <code>add</code></li>
+                </ul>
+            </div><!--//block-->         
+            </div><!--//docs-inner-->         
+        </div><!--//container-->
+    </section><!--//features-->
+	
+	<!-- ******SOURCE****** --> 
+    <section id="source" class="source section">
+        <div class="container">
+            <div class="license-inner">
+            <h2 class="title text-center">Source Code</h2>
+                <div class="cta-container">                  
+					<p class="intro text-center">The source code of this bot is in a public GitHub repository together with all the bots I created. <br>Please feel free to visit my GitHub page if you have any questions about the implementation. Suggestions for improvements are always welcome :)</p>
+                </div><!--//cta-container-->
+				<div class="btn-container  text-center">     
+                        <p class="text-center">
+							<a class="btn btn-cta-primary" href="https://github.com/xriley/devAid-Theme" target="_blank">Visit GitHub</a>
+						</p>                       
+                </div><!--//btn-container-->
+            </div><!--//license-inner-->
+        </div><!--//container-->
+    </section><!--//how-->
+    
+    <!-- ******SUPPORT****** --> 
+    <section id="support" class="license section">
+        <div class="container">
+            <div class="license-inner">
+            <h2 class="title text-center">Support</h2>
+                <div class="cta-container">                  
+					<p class="intro text-center">If you are feeling generous and want to show your support, you can buy me a beer or coffee via PayPal :)</p>
+                    <div class="btn-container  text-center">
+                        <a href="https://www.paypal.me/MaxKroner"><i class="fa fa-cc-paypal"></i></a>                         
+                    </div><!--//btn-container-->
+                </div><!--//cta-container-->
+            </div><!--//license-inner-->
+        </div><!--//container-->
+    </section><!--//how-->
+    
+    <!-- ******CONTACT****** --> 
+    <section id="contact" class="contact section has-pattern">
+        <div class="container">
+            <div class="contact-inner">
+                <h2 class="title  text-center">Contact</h2>
+                <p class="intro  text-center">I hope you find this Discord bot useful. <br />Feel free to get in touch if you have any questions or suggestions.</p>
+                <div class="info text-center">
+                    <h4 class="sub-title">Get Connected</h4>
+                    <ul class="social-icons list-inline">
+                        <li class="last"><a href="development@maxkroner.de"><i class="fa fa-envelope"></i></a></li>                       
+                        <li><a href="https://www.linkedin.com/in/max-kroner-481a0213a/"><i class="fa fa-linkedin"></i></a></li>
+						<li><a href="https://www.maxkroner.de"><i class="fa fa-globe"></i></a></li>  						
+                        <li><a href="https://www.instagram.com/kronerm/"><i class="fa fa-instagram"></i></a></li>				
+                        <li class="last"><a href="development@maxkroner.de"><i class="fa fa-envelope"></i></a></li> 
+						<li><a href="https://twitter.com/SSBBIke" target="_blank"><i class="fa fa-twitter"></i></a></li>						
+                    </ul>
+                </div><!--//info-->
+            </div><!--//contact-inner-->
+        </div><!--//container-->
+    </section><!--//contact-->  
+      
+    <!-- ******FOOTER****** --> 
+    <footer class="footer">
+        <div class="container text-center">
+            <!--/* This template is released under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using for your own project. Thank you for your support. :) If you'd like to use the template without the attribution, you can check out other license options via our website: themes.3rdwavemedia.com */-->
+            <small class="copyright">Bootstrap design from <a href="https://www.linkedin.com/in/xiaoying" target="_blank">Xiaoying Riley</a> at 3rd Wave Media under the <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">Creative Commons License</a></small>
+        </div><!--//container-->
+    </footer><!--//footer-->
+     
+    <!-- Javascript -->          
+    <script type="text/javascript" src="assets/plugins/jquery-1.11.3.min.js"></script>   
+    <script type="text/javascript" src="assets/plugins/jquery.easing.1.3.js"></script>   
+    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>     
+    <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script> 
+    <script type="text/javascript" src="assets/plugins/prism/prism.js"></script>    
+    <script type="text/javascript" src="assets/js/main.js"></script>       
+</body>
+</html> 
+
