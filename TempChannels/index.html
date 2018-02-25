@@ -65,7 +65,7 @@
     <!-- ******PROMO****** -->
     <section id="promo" class="promo section offset-header">
         <div class="container text-center">
-            <h2 class="title">Temp<span class="highlight">Channels</span></h2>
+            <p><h2 class="title">Temp<span class="highlight">Channels</span></h2></p>
             <p class="intro">Temporary voice channels for Discord! <br> Just like in the good old TeamSpeak times. </p>
             <div class="btns">
                 <a class="btn btn-cta-secondary" href="https://discordapp.com/oauth2/authorize?client_id=367665720055824384&scope=bot&permissions=16784592" target="_blank">Invite</a>
@@ -81,7 +81,7 @@
                 <ul class="list-inline">
                     <li><a href="https://discordbots.org/bot/367665720055824384"><img src="https://discordbots.org/api/widget/status/367665720055824384.svg?noavatar=true"" /></a></li>             
                     <li><a href="https://discordbots.org/bot/367665720055824384"><img src="https://discordbots.org/api/widget/lib/367665720055824384.svg?noavatar=true"" /></a></li>
-					<li><a href="https://discordbots.org/bot/367665720055824384"><img src="https://discordbots.org/api/widget/upvotes/367665720055824384.svg?noavatar=true"" /></a></li>
+					<li><a href="https://discordbots.org/bot/367665720055824384"><img src="https://discordbots.org/api/widget/servers/367665720055824384.svg?noavatar=true"" /></a></li>
 					<li><a href="https://discordbots.org/bot/367665720055824384"> <img src="https://discordbots.org/api/widget/owner/367665720055824384.svg?noavatar=true" /></a></li>
                 </ul>
             </div>
@@ -160,9 +160,8 @@
 			<div id="list-wrapper">
 				<ul class="feature-list list-unstyled text-left">
 					<li><a class="guide btn btn-cta-secondary" href="https://discordapp.com/oauth2/authorize?client_id=367665720055824384&scope=bot&permissions=16784592" target="_blank">Invite</a> TempChannels to your server</li>
-					<li><i class="fa fa-angle-right"></i> Check that the bot has sufficient rights to create and manage a channel</li>
 					<li><i class="fa fa-angle-right"></i> Use <code>!c</code> to create a new TempChannel</li>
-					<li><i class="fa fa-angle-right"></i> Use <code>!kick</code> and <code>!ban</code> in your TempChannel to remove unwanted guests</li>
+					<li><i class="fa fa-angle-right"></i> Use <code>!ban @User</code> to remove unwanted guests</li>
 					<li><i class="fa fa-angle-right"></i> Use <code>!cc</code> to delete all your TempChannels</li>
 					<li><i class="fa fa-angle-right"></i> Use <code>!help</code> for everything else</li>
 					<li><i class="fa fa-heart heart"></i> Enjoy your Discord experience</li>
@@ -193,7 +192,7 @@
                 <ul class="command-properties list-unstyled">
                     <li><strong>Command:</strong> <code>!prefix &ltnew prefix&gt</code></li>
 					<li><strong>Description:</strong> Change the prefix used to identify commands. <code>!</code> is the standard prefix.</li>
-                    <li><strong>Aliases:</strong> <code>p</code> <code>tempChannelsPrefix</code></li>
+                    <li><strong>Aliases:</strong> <code>tempChannelsPrefix</code></li>
                 </ul>
 				 <ul class="command-properties list-unstyled">
                     <li><strong>Command:</strong> <code>!disable &ltcommand&gt</code></li>
@@ -215,6 +214,12 @@
                     <li><strong>Aliases:</strong> <code>c</code>, <code>create</code>, <code>new</code></li>
                 </ul>
 
+                <ul class="list-unstyled">
+					<li><strong>Example 1:</strong> <code>!channel -n "my channel"</code></li>
+					<li><strong>Example 2:</strong> <code>!c -m @UserName -n "my channel" -l 10</code> </li>
+                </ul>
+                
+                <p class="warn">The following table contains options that are used behind the command!</p>
 				<div class="options-table col-lg-8 col-md-10 col-sm-12 col-xs-12">
 					<table class="table table-striped">
 					<tbody>
@@ -249,12 +254,6 @@
 					</tbody>
 					</table>
 				</div>
-                
-				<ul class="list-unstyled">
-					<li><strong>Example 1:</strong> <code>!channel -n "my channel"</code></li>
-					<li><strong>Example 2:</strong> <code>!c -m @UserName -n "my channel" -l 10</code> </li>
-                </ul>
-				
             </div><!--//block-->
             
             <div class="block">
