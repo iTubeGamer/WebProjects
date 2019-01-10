@@ -1,114 +1,133 @@
-
 <!DOCTYPE html>
 <html>
 <title>Max Kroner</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/lib/w3.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="assets/style.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
-.w3-bar,h1,button {font-family: "Montserrat", sans-serif}
-.fa-anchor,.fa-coffee {font-size:200px}
-</style>
-<body>
+<link rel="stylesheet" href="http://github-profile.com/dist/gh-profile-card.min.css" />
+<script type="text/javascript" src="http://github-profile.com/dist/gh-profile-card.min.js"></script>
+<body class="w3-content" style="max-width:1300px">
 
-<!-- Navbar -->
-<div class="w3-top">
-  <div class="w3-bar w3-blue w3-card-2 w3-left-align w3-large">
-    <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-opennav w3-right w3-padding-large w3-hover-white w3-large w3-blue" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
-    <a href="#" class="w3-bar-item w3-button w3-padding-large w3-white">Home</a>
-    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Link 1</a>
-    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Link 2</a>
-    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Link 3</a>
-    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Link 4</a>
-  </div>
-
-  <!-- Navbar on small screens -->
-  <div id="navSmall" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium w3-large">
-    <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 1</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 2</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 3</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 4</a>
-  </div>
-</div>
-
-<!-- Header -->
-<header class="w3-container w3-blue w3-center w3-padding-128">
-  <h1 class="w3-margin w3-jumbo">Max Kroner</h1>
-  <p class="w3-xlarge">Vorstellungsseite</p>
- <!-- <button class="w3-button w3-black w3-padding-large w3-large w3-margin-top">Get Started</button> -->
-</header>
-
-<!-- First Grid -->
-<div class="w3-row-padding w3-padding-64 w3-container">
-  <div class="w3-content">
-    <div class="w3-twothird">
-      <h1>Was du hier findest</h1>
-      <h5 class="w3-padding-32">Hi! Toll, dass du auf meine Seite gefunden hast. Auf diser Seite verlinke ich alle meine öffentlichen Projekte. Doch zunächst ein paar Infos zu meiner Person: </h5>
-
-      <p class="w3-text-grey">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-        laboris nisi ut aliquip ex ea commodo consequat.</p>
+<!-- First Grid: Logo & About -->
+<div class="w3-row">
+  <div class="w3-half w3-black w3-container w3-center" style="height:700px">
+    <div class="w3-padding-64">
+      <h1>MK</h1>
     </div>
-    <div class="w3-third">
-      <div class="w3-card-4" style="width:92%;min-width:200px;max-width:280px;">
-        <img style="width:100%" alt="Avatar" src="max_kroner.jpg">
-        <div class="w3-container">
-        <p>Dualstudent Wirtschaftsinformatik<p>      
-        </div>
+    <div class="w3-padding-64">
+      <a href="#" class="w3-button w3-black w3-block w3-hover-blue-grey w3-padding-16">Home</a>
+      <a href="#work" class="w3-button w3-black w3-block w3-hover-teal w3-padding-16">My Work</a>
+      <a href="#work" class="w3-button w3-black w3-block w3-hover-dark-grey w3-padding-16">Resume</a>
+      <a href="#contact" class="w3-button w3-black w3-block w3-hover-brown w3-padding-16">Contact</a>
+    </div>
+  </div>
+  <div class="w3-half w3-blue-grey w3-container" style="height:700px">
+    <div class="w3-padding-64 w3-center">
+      <h1>About Me</h1>
+      <img src="assets/profile.jpg" class="w3-margin w3-circle" alt="Person" style="width:50%">
+      <div class="w3-left-align w3-padding-large w3-center">
+        <p>Hi, my name is Max Kroner! <br>I am a student at Nordakademie in Elmshorn, Germany. </p>
+        <p>This website is inteded for everyone who is interested in me or my projects. Have fun!</p>
       </div>
-    </div> 
-  </div>
-</div>
-
-<!-- Second Grid -->
-<div class="w3-row-padding w3-light-grey w3-padding-64 w3-container">
-  <div class="w3-content">
-    <div class="w3-third w3-center">
-      <i class="fa fa-coffee w3-padding-64 w3-text-red w3-margin-right"></i>
-    </div>
-
-    <div class="w3-twothird">
-      <h1>Lorem Ipsum</h1>
-      <h5 class="w3-padding-32">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</h5>
-
-      <p class="w3-text-grey">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-        laboris nisi ut aliquip ex ea commodo consequat.</p>
     </div>
   </div>
 </div>
 
-<div class="w3-container w3-black w3-center w3-opacity w3-padding-64">
-    <h1 class="w3-margin w3-xlarge">Quote of the day: live life</h1>
+<!-- Second Grid: Work & Resume -->
+<div class="w3-row">
+  <div class="w3-half w3-light-grey w3-center" style="min-height:800px" id="work">
+    <div class="w3-padding-64">
+      <h2>My Work</h2>
+      <p>Some of my latest projects.</p>
+    </div>
+	<div id="project-container">
+		<div class="w3-row">
+		  <div>
+			<a href="/projects/TempChannels" class="highlight"><img src="assets/tempchannels.png" style="width:100%"><a/>
+		  </div>
+		</div>
+		<div class="w3-row">
+		  <div class="w3-half">
+			<a href="/projects/Stocks" class="highlight"><img src="assets/stocks.png" style="width:100%"><a/>
+		  </div>
+		  <div class="w3-half">
+			<a href="/projects/TempChannels" class="highlight"><img src="assets/placeholder.png" style="width:100%"><a/>
+		  </div>
+		</div>
+	</div>
+
+
+	<br>
+    <p>Very wow. Much amaze.</p>
+  </div>
+  <div class="w3-half w3-indigo w3-container" style="min-height:800px">
+    <div class="w3-padding-64 w3-center">
+      <h2>Resume</h2>
+      <p></p>
+      <div class="w3-container w3-responsive">
+        <table class="w3-table">
+          <tr>
+            <th>Year</th>
+            <th>Title</th>
+            <th>Where</th>
+          </tr>
+		  <!--
+          <tr class="w3-white">
+            <td>2019-</td>
+            <td>Software Developer</td>
+            <td>comdirect, Quickborn</td>
+          </tr>
+		  -->
+          <tr class="w3-white">
+            <td>2015-2019</td>
+            <td>Bachelor of Science in Wirtschaftsinformatik (Business informatics)</td>
+            <td>Nordakademie, Elmshorn</td>
+          </tr>
+          <tr class="">
+            <td>2006-2015</td>
+            <td>Abitur (Higher School Certificate)</td>
+            <td>Gymnasium Harksheide, Norderstedt</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Third Grid: Swing By & Contact -->
+<div class="w3-row" id="contact">
+  <div class="w3-half w3-dark-grey w3-container w3-center" style="height:700px">
+    <div class="w3-padding-64">
+      <h1>Github</h1>
+	  <p>Visit my github profile for futher information on my projects</p>
+    </div>
+	<div id="github-card"
+	 data-username="iTubeGamer"
+	 data-max-repos="3">
+	</div>
+
+  </div>
+  <div class="w3-half w3-teal w3-container w3-center" style="height:700px">
+    <div class="w3-padding-64 w3-padding-large">
+      <h1>Contact</h1>
+      <p>Get in touch</p>
+	</div>
+                
+	<a href="https://www.linkedin.com/in/max-kroner-481a0213a/" class="fa fa-linkedin"></a>
+	<a href="https://www.maxkroner.de" class="fa fa-twitter"></a> 						
+	<a href="https://www.instagram.com/kronerm/" class="fa fa-instagram"></a><br><br>	
+	<a href="mailto:development@maxkroner.de">development@maxkroner.de</a>	
+
+    
+  </div>
 </div>
 
 <!-- Footer -->
-<footer class="w3-container w3-padding-64 w3-center w3-opacity">  
-  <div class="w3-xlarge w3-padding-32">
-   <a href="#" class="w3-hover-text-indigo"><i class="fa fa-facebook-official"></i></a>
-   <a href="#" class="w3-hover-text-red"><i class="fa fa-pinterest-p"></i></a>
-   <a href="#" class="w3-hover-text-light-blue"><i class="fa fa-twitter"></i></a>
-   <a href="#" class="w3-hover-text-grey"><i class="fa fa-flickr"></i></a>
-   <a href="#" class="w3-hover-text-indigo"><i class="fa fa-linkedin"></i></a>
- </div>
- <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+<footer class="w3-container w3-black w3-padding-16">
+  <p></p>
 </footer>
-
-<script>
-// Used to toggle the menu on small screens when clicking on the menu button
-function myFunction() {
-    var x = document.getElementById("navSmall");
-    if (x.className.indexOf("w3-show") == -1) {
-        x.className += " w3-show";
-    } else { 
-        x.className = x.className.replace(" w3-show", "");
-    }
-}
-</script>
 
 </body>
 </html>

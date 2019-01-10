@@ -1,0 +1,52 @@
+.highlight img{
+filter:progid:DXImageTransform.Microsoft.Alpha(opacity=50);
+-moz-opacity: 0.1;
+opacity: 1;
+}
+
+.highlight:hover img{
+filter:progid:DXImageTransform.Microsoft.Alpha(opacity=100);
+-moz-opacity: 0.7;
+opacity: 0.7;
+}
+
+#github-card {
+	margin: 0 auto;
+}
+
+#project-container {
+	padding: 15px;
+}
+
+.fa {
+  padding: 20px;
+  font-size: 30px;
+  width: 50px;
+  text-align: center;
+  text-decoration: none;
+  margin: 5px 2px;
+}
+
+.fa:hover {
+    opacity: 0.7;
+}
+
+.fa-linkedin {
+  background: #007bb5;
+  color: white;
+}
+
+.fa-youtube {
+  background: #bb0000;
+  color: white;
+}
+
+.fa-instagram {
+  background: #125688;
+  color: white;
+}
+
+.fa-twitter {
+  background: #55ACEE;
+  color: white;
+}
