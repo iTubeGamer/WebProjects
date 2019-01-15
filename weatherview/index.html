@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+	<link rel="stylesheet" href="style.css">
+    <title>Weatherview</title>
+  </head>
+  <body>
+  <script>
+	 var d = new Date();
+	 var now = d.getHours();
+  </script>
+  <script type='text/javascript' src='https://darksky.net/widget/default/53.709,9.9892/uk12/en.js?width=100%&height=350&title=Norderstedt, DE&textColor=333333&bgColor=FFFFFF&transparency=false&skyColor=undefined&fontFamily=Default&customFont=&units=uk&htColor=333333&ltColor=C7C7C7&displaySum=yes&displayHeader=yes'></script>
+  <div class="container">
+	<iframe id="map-embed-iframe" frameborder="0" height="500px" width="100%" src="https://maps.darksky.net/@precipitation_rate,2019-1-11,17,53.863,10.105,9?domain=&quot;+encodeURIComponent(window.location.href)+&quot;&amp;auth=1547219878_9f9696214f3ab80be519b34c809266c6&amp;embed=true&amp;timeControl=false&amp;fieldControl=false&amp;defaultField=precipitation_rate&amp;defaultUnits=_mmph"></iframe>
+	<script src='https://darksky.net/map-embed/@precipitation_rate,2019-1-11,17,53.863,10.105,9.js?embed=true&timeControl=false&fieldControl=false&defaultField=precipitation_rate&defaultUnits=_mmph'></script>
+  </div>
+  <div class="container">
+	<script src='https://darksky.net/map-embed/@wind_speed,2019-1-11,14,54.219,9.712,7.js?embed=true&timeControl=false&fieldControl=false&defaultField=wind_speed&defaultUnits=_kmph'></script>
+    <script src='https://darksky.net/map-embed/@wind_gust,2019-1-11,14,54.219,9.712,7.js?embed=true&timeControl=false&fieldControl=false&defaultField=wind_gust&defaultUnits=_kmph'></script>
+  </div>
+
+ <iframe id="map-embed-iframe" frameborder="0" height="700px" width="100%" src="https://maps.darksky.net/@temperature,45.770,19.823,4?domain=&quot;+encodeURIComponent(window.location.href)+&quot;&amp;auth=1547220655_dffbcc24ffe2604931d1e94be1ab9914&amp;embed=true&amp;timeControl=false&amp;fieldControl=false&amp;defaultField=temperature&amp;defaultUnits=_c"></iframe>
+  
+  </body>
+ </html>
