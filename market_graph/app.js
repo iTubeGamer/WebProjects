@@ -15,24 +15,13 @@ app.get("/matrix", (req, res, next) => {
 	//get symbols from params
 	 if (req.query.symbols){
 			UNIVERSE = req.query.symbols.split(',');
-			console.log('aha');
 	 }
 	 
 	 console.log('Creating matrix for universe: ' + UNIVERSE.join(','));
 	 
-	 let promise = createMatrix();
-	 console.log(promise); 
-	 
-	 promise.then(function response(result) {
-		 console.log('finished matrix: ' + result);
-		 res.json(result);
-	 }).catch(function(err){
-		 console.error('waduuu häck: ' + err);
-	 });
-	 
-	 
-	 
-	 
+	 createMatrix().then(result => res.json(result))
+	 .catch(err => console.error(err));
+
 });
 app.listen(3000, () => {
  console.log("Server running on port 3000");
@@ -75,7 +64,6 @@ function calculateMatrix(chartData){
 				let symbol2=UNIVERSE[j];
 				let corrPromise = spearmanCoefficient(chartData[symbol1].chart, chartData[symbol2].chart);
 				corrPromise.then(function result(corr){
-					  console.log(symbol1 + ", " + symbol2 + ", " + corr);
 					  corrMatrix.push([symbol1, symbol2, corr]);
 					  if((i === UNIVERSE.length - 2) && (j === UNIVERSE.length - 1)){
 						  resolve(corrMatrix);
