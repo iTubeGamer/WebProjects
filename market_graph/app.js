@@ -75,9 +75,14 @@ function calculateMatrix(stock_universe, chartData){
 	
 	return new Promise(function(resolve, reject) {
 	    var corrMatrix = [];
-		console.log('Creating matrix');		
+		var timestamp = Date.now();
+		console.log('Creating matrix');
 
 		for (let i = 0; i < stock_universe.length - 1; i++){
+			if(Date.now() - timestamp > 5000){
+				console.log((corrMatrix.length / (stock_universe.length * stock_universe.length / 2) * 100).toFixed(2));
+				timestamp = Date.now();
+			}	
 			for (let j = i+1; j < stock_universe.length; j++){
 				let symbol1=stock_universe[i];
 				let symbol2=stock_universe[j];
