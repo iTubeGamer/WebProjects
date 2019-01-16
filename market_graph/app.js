@@ -76,19 +76,25 @@ function calculateMatrix(stock_universe, chartData){
 	return new Promise(function(resolve, reject) {
 	    var corrMatrix = [];
 		var timestamp = Date.now();
+		var counter = 0;
 		console.log('Creating matrix');
 
-		for (let i = 0; i < stock_universe.length - 1; i++){
-			if(Date.now() - timestamp > 5000){
-				console.log((corrMatrix.length / (stock_universe.length * stock_universe.length / 2) * 100).toFixed(2));
-				timestamp = Date.now();
-			}	
+		for (let i = 0; i < stock_universe.length - 1; i++){	
 			for (let j = i+1; j < stock_universe.length; j++){
 				let symbol1=stock_universe[i];
 				let symbol2=stock_universe[j];
 				let corrPromise = spearmanCoefficient(chartData[symbol1].chart, chartData[symbol2].chart, symbol1, symbol2);
 				corrPromise.then(function result(corr){
 					  corrMatrix.push([symbol1, symbol2, corr]);
+					  
+					  //--logging--//
+					  counter++;
+					  if(Date.now() - timestamp > 1000){
+							console.log('matrix calculation: ' + counter + '/' + stock_universe.length * (stock_universe.length - 1) / 2);
+							timestamp = Date.now();
+						}
+					 //--logging--//
+						
 					  if((i === stock_universe.length - 2) && (j === stock_universe.length - 1)){
 						  console.log('matrix complete. universe size: ' + stock_universe.length + ', matrix size: ' + corrMatrix.length);
 						  resolve(corrMatrix);
