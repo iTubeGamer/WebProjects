@@ -81,10 +81,11 @@ function calculateMatrix(stock_universe, chartData){
 			for (let j = i+1; j < stock_universe.length; j++){
 				let symbol1=stock_universe[i];
 				let symbol2=stock_universe[j];
-				let corrPromise = spearmanCoefficient(chartData[symbol1].chart, chartData[symbol2].chart);
+				let corrPromise = spearmanCoefficient(chartData[symbol1].chart, chartData[symbol2].chart, symbol1, symbol2);
 				corrPromise.then(function result(corr){
 					  corrMatrix.push([symbol1, symbol2, corr]);
 					  if((i === stock_universe.length - 2) && (j === stock_universe.length - 1)){
+						  console.log('matrix complete. universe size: ' + stock_universe.length + ', matrix size: ' + corrMatrix.length);
 						  resolve(corrMatrix);
 					  }
 				}).catch(err => reject(err));
@@ -105,7 +106,7 @@ function extractCompanyData(stock_universe, chartData){
 	return companyData;
 }
 
-function spearmanCoefficient(chart_x, chart_y){
+function spearmanCoefficient(chart_x, chart_y, symbol_x, symbol_y){
 	let x = [];
 	let y = [];
 	
@@ -134,16 +135,20 @@ function spearmanCoefficient(chart_x, chart_y){
 		const spearman = new Spearman(x, y);
 		return spearman.calc(); 
 	} else {
+		console.warn('Not enough overlap between ' + symbol_x + ' and ' + symbol_y + '. No correlation calculated.');
 		return new Promise(function(resolve, reject){
 			resolve(0);
-		};
+		});
 		
 	}
 	
-	
-	
-	  
 }
+
+function createStockNodesInDb(companyData){
+	console.log('Creating stock nodes in db');	
+	}
+	
+	
 	  	  
 /*	
 var driver = neo4j.driver("bolt://localhost", neo4j.auth.basic("neo4j", "geheim"));
