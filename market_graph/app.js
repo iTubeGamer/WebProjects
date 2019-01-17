@@ -16,8 +16,8 @@ const LOG_INTERVAL = 1000;
 
 var app = express();
 app.get("/matrix", (req, res, next) => {
-	//var stock_universe = SP500.split(',');
-	var stock_universe = DEFAULT_UNIVERSE;
+	var stock_universe = SP500.split(',');
+	//var stock_universe = DEFAULT_UNIVERSE;
 	
 	//get symbols from params
 	 if (req.query.symbols){
@@ -48,6 +48,7 @@ function createGraphForUniverseInDb(stock_universe) {
 	return new Promise(function(resolve, reject) {
 		var chartData = {};
 		var results = [];
+		var batchCounter = 0;
 		
 		//get stock data in batches
 		console.log('loading data for stock universe: ' + stock_universe.join(','));
@@ -61,8 +62,9 @@ function createGraphForUniverseInDb(stock_universe) {
 		  fetch(url).then(response => response.json()).then(json => {
 				//merge json-data in one object: chartData
 				Object.assign(chartData, json);
+				batchCounter++;
 				
-				if(i + 1 === numberOfBatches){
+				if(batchCounter === numberOfBatches){
 					//when all batches are merged: remove symbols from universe which are not accepted by IEX
 					for(var k = stock_universe.length -1; k >= 0; k--){
 						if (!chartData[stock_universe[k]]) {
@@ -92,36 +94,39 @@ function createGraphForUniverseInDb(stock_universe) {
 function createStockNodesInDb(stock_universe, chartData, results){
 	return new Promise(function(resolve, reject){
 		console.log('Creating stock nodes in db');
-		var counter = 0;
+		var session = driver.session();
+		var finished_nodes_db = 0;
 		
 		//remove all nodes
-		executeDbQuery('MATCH (n) DETACH DELETE n', {}).then(result => {
+		executeDbQuery('MATCH (n) DETACH DELETE n', {})
+		.then(function(result) {
 			console.log('deleted all nodes');
 			results.push('Deleted ' + result.summary.counters._stats.nodesDeleted 
-			+ ' nodes and ' + result.summary.counters._stats.relationshipsDeleted + 'relationships.');
-			if (++counter === 2)resolve();	
-		}).catch(err => reject(err));
-		
-		//add new nodes
-		let sb = new StringBuilder();
-		sb.append( 'CREATE ');
-		stock_universe.forEach(function(symbol, i){
-			let company = chartData[symbol].company.companyName;
-			let industry = chartData[symbol].company.industry;
-			let sector = chartData[symbol].company.sector;
-			
-			sb.append( `(${symbol}:stock {symbol: '${symbol}', company: '${company}', industry: '${industry}', sector: '${sector}'})`);
-			if(i !== stock_universe.length -1){
-				sb.append(',');
-			}		
-		 
-		});
-		executeDbQuery(sb.toString(), {}).then(result => {
-			console.log('created stock nodes');
-			results.push('Created ' + result.summary.counters._stats.nodesCreated + ' nodes.');
-			if (++counter === 2)resolve();	
-		}).catch(err => reject(err));	
-	});	
+			+ ' node(s) and ' + result.summary.counters._stats.relationshipsDeleted + ' relationship(s).');
+			//when old nodes are deleted: create new ones
+			stock_universe.forEach(function(symbol, i){
+				let symbol_db = symbol.replace('.', '_')
+				let company = chartData[symbol].company.companyName;
+				let industry = chartData[symbol].company.industry;
+				let sector = chartData[symbol].company.sector;
+				let tags = chartData[symbol].company.tags;
+				
+				executeDbQueryWithSession(`CREATE (${symbol_db}:stock {symbol: $symbolParam, company: $companyParam, industry: $industryParam, sector: $sectorParam, tags: $tagsParam})`, 
+				{symbolParam: symbol_db, companyParam: company, industryParam: industry, sectorParam: sector, tagsParam: tags}, session)
+				.then(result => {
+					finished_nodes_db++;
+					
+					//when all nodes are inserted: resolve
+					if(finished_nodes_db === stock_universe.length){
+						session.close();
+						console.log('created stock nodes');
+						results.push('Created ' + finished_nodes_db + ' nodes.');
+						resolve();
+					}	
+				}).catch(err => reject(err));
+			});
+		}).catch(err => reject(err));	 
+	});		
 }
 
 																						   
@@ -168,6 +173,8 @@ function createCorrelatoinRelationshipsInDb(stock_universe, chartData, results){
 		}
 	});
 }
+	
+	
 
 function timedLog(string){
 	let now = Date.now();
@@ -231,7 +238,7 @@ function executeDbQuery(query, parameters){
 }
 
 function executeDbQueryWithSession(query, parameters, session){
-	return new Promise(function(resolve, reject){	
+	return new Promise(function(resolve, reject){
 		session
 		  .run(query, parameters)
 		  .then(function (result) {
