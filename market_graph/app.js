@@ -132,6 +132,7 @@ function createCorrelatoinRelationshipsInDb(stock_universe, chartData, results){
 		var started = 0;
 		var finished_corr = 0;
 		var finished_db = 0;
+		var session = driver.session();
 		console.log('Creating correlation relationships');
 
 		for (let i = 0; i < stock_universe.length - 1; i++){	
@@ -144,9 +145,9 @@ function createCorrelatoinRelationshipsInDb(stock_universe, chartData, results){
 				corrPromise.then(function result(corr){
 					  finished_corr++;
 					  timedLog('started: ' + started + ', finished_corr: ' + finished_corr + ', finished_db: ' + finished_db + ', total: ' + stock_universe.length * (stock_universe.length - 1) / 2);
-					  executeDbQuery(`MATCH (a:stock),(b:stock)` +
+					  executeDbQueryWithSession(`MATCH (a:stock),(b:stock)` +
 				`WHERE a.symbol = '${symbol1}' AND b.symbol = '${symbol2}'` +
-										`CREATE (a)-[r:RELTYPE { correlation: ${corr} }]->(b)`, {})
+										`CREATE (a)-[r:RELTYPE { correlation: ${corr} }]->(b)`, {}, session)
 					  .then(function(result){
 						  finished_db++;
 						  timedLog('started: ' + started + ', finished_corr: ' + finished_corr + ', finished_db: ' + finished_db + ', total: ' + stock_universe.length * (stock_universe.length - 1) / 2);
@@ -154,6 +155,7 @@ function createCorrelatoinRelationshipsInDb(stock_universe, chartData, results){
 						  if(finished_db === stock_universe.length * (stock_universe.length - 1) / 2){
 							  console.log('Inserted ' + finished_db + ' relationships. (universe size: ' + stock_universe.length + ')');
 							  results.push('Created ' + finished_db + ' relationships.');
+							  session.close();
 							  resolve(result);
 						  }
 						  
@@ -214,7 +216,7 @@ function spearmanCoefficient(chart_x, chart_y, symbol_x, symbol_y){
 
 function executeDbQuery(query, parameters){
 	return new Promise(function(resolve, reject){
-		var session = driver.session();;
+		var session = driver.session();
 		
 		session
 		  .run(query, parameters)
@@ -223,6 +225,18 @@ function executeDbQuery(query, parameters){
 			 resolve(result);
 		  }).catch(function (err) {
 			session.close();
+			reject(err);
+		  });
+	});
+}
+
+function executeDbQueryWithSession(query, parameters, session){
+	return new Promise(function(resolve, reject){	
+		session
+		  .run(query, parameters)
+		  .then(function (result) {
+			 resolve(result);
+		  }).catch(function (err) {
 			reject(err);
 		  });
 	});
