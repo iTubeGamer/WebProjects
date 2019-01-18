@@ -189,7 +189,6 @@ function createRelationshipBatch(stock_universe, chartData, start, end, batch_si
 										batch_size_new = batch_size_new + (stock_universe.length - end_new - 1);	
 									}
 								  createRelationshipBatch(stock_universe, chartData, start_new, end_new, batch_size_new, ++batch_no, results).then(function(){
-									 console.log('Resolving batch ' + batch_no - 1);
 									 resolve(); 
 								  }).catch(err => reject(err));
 								  
