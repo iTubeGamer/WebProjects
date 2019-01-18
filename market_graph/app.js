@@ -194,7 +194,7 @@ function createRelationshipBatch(stock_universe, chartData, start, end, batch_si
 								  }).catch(err => reject(err));
 								  
 							  } else {
-								 console.log('Resolving last batch');
+								 console.log('Resolving batches...');
 								 resolve();	  
 							  }
 							  
