@@ -68,13 +68,15 @@ function createGraphForUniverseInDb(stock_universe) {
 				batchCounter++;
 				
 				if(batchCounter === numberOfBatches){
-					//when all batches are merged: remove symbols from universe which are not accepted by IEX
+					//when all batches are merged: remove symbols from universe which are not accepted by IEX or have less then 200 prices
 					for(var k = stock_universe.length -1; k >= 0; k--){
 						if (!chartData[stock_universe[k]]) {
 							console.log('Removing symbol ' + stock_universe[k] + ', it is not supported by IEX');
 							stock_universe.splice(k, 1);
-							
-						}	
+						} else if (chartData[stock_universe[k].length < 200]){
+							console.log('Removing symbol ' + stock_universe[k] + ', the stock price is available for less than 200 days');
+							stock_universe.splice(k, 1);
+						}
 					}
 					console.log('cleaning done');
 					
