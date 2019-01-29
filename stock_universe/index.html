@@ -6,13 +6,19 @@
     <title>Stocks!</title>
     <link rel="icon" href="https://d3v3cbxkdlyonc.cloudfront.net/stocks/favicon.ico">
 	<link rel="stylesheet" type="text/css" href="style.css">
+	<script src="https://cdn.rawgit.com/neo4j/neo4j-javascript-driver/1.4.1/lib/browser/neo4j-web.min.js"></script>
+	<script src="https://unpkg.com/3d-force-graph"></script>
 	<script src="code.js"></script>
     <meta name="description" content="A free, lightweight, blazing-fast page to get stock quotes using the IEX API">
 
   </head>
 
   <body>
-    <div class="stocks-container"></div>
+	<div id="menue" >
+		<label for="coloring">Coloring</label>
+		<select id="coloring" onchange="onSelectColoring()"></select>
+	</div>
+    <div id="3d-graph"></div>
 
     <p class="attribution">
       Data provided for free by <a href="https://iextrading.com/developer/" target="_blank">IEX</a>.

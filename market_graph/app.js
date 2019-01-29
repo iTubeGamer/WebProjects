@@ -13,12 +13,14 @@ const BATCH_SIZE = 100;
 const BASE_URL = 'https://api.iextrading.com/1.0/stock/market/batch';
 var timestamp = new Date();
 const LOG_INTERVAL = 1000;
+const BATCH_SIZE_COR = 1000;
 
 
 var app = express();
 app.get("/matrix", (req, res, next) => {
 	//var stock_universe = SP500.split(',');
 	/*var stock_universe = DEFAULT_UNIVERSE;
+
 	
 	//get symbols from params
 	 if (req.query.symbols){
@@ -31,10 +33,13 @@ app.get("/matrix", (req, res, next) => {
 			 
 			 //json response with matrix
 			driver.close();
-			results.push(stock_universe);
-			res.json(results);
+			var response = {};
+			response['messages'] = results;
+			response['universe'] = stock_universe;
+			res.json(response);
 		 }).catch(err => reject(err));
 		 
+
 	 }.catch(function(err){
 		 console.error(err);
 		 res.json('An internal error occured.');
@@ -72,6 +77,7 @@ function createGraphForUniverseInDb(stock_universe) {
 	return new Promise(function(resolve, reject) {
 		var chartData = {};
 		var results = [];
+		var batchCounter = 0;
 		
 		//get stock data in batches
 		console.log('loading data for stock universe: ' + stock_universe.join(','));
@@ -85,8 +91,9 @@ function createGraphForUniverseInDb(stock_universe) {
 		  fetch(url).then(response => response.json()).then(json => {
 				//merge json-data in one object: chartData
 				Object.assign(chartData, json);
+				batchCounter++;
 				
-				if(i + 1 === numberOfBatches){
+				if(batchCounter === numberOfBatches){
 					//when all batches are merged: remove symbols from universe which are not accepted by IEX
 					for(var k = stock_universe.length -1; k >= 0; k--){
 						if (!chartData[stock_universe[k]]) {
@@ -116,80 +123,118 @@ function createGraphForUniverseInDb(stock_universe) {
 function createStockNodesInDb(stock_universe, chartData, results){
 	return new Promise(function(resolve, reject){
 		console.log('Creating stock nodes in db');
-		var counter = 0;
+		var session = driver.session();
+		var finished_nodes_db = 0;
 		
 		//remove all nodes
-		executeDbQuery('MATCH (n) DETACH DELETE n', {}).then(result => {
+		executeDbQuery('MATCH (n) DETACH DELETE n', {})
+		.then(function(result) {
 			console.log('deleted all nodes');
 			results.push('Deleted ' + result.summary.counters._stats.nodesDeleted 
-			+ ' nodes and ' + result.summary.counters._stats.relationshipsDeleted + 'relationships.');
-			if (++counter === 2)resolve();	
-		}).catch(err => reject(err));
-		
-		//add new nodes
-		let sb = new StringBuilder();
-		sb.append( 'CREATE ');
-		stock_universe.forEach(function(symbol, i){
-			let company = chartData[symbol].company.companyName;
-			let industry = chartData[symbol].company.industry;
-			let sector = chartData[symbol].company.sector;
-			
-			sb.append( `(${symbol}:stock {symbol: '${symbol}', company: '${company}', industry: '${industry}', sector: '${sector}'})`);
-			if(i !== stock_universe.length -1){
-				sb.append(',');
-			}		
-		 
-		});
-		executeDbQuery(sb.toString(), {}).then(result => {
-			console.log('created stock nodes');
-			results.push('Created ' + result.summary.counters._stats.nodesCreated + ' nodes.');
-			if (++counter === 2)resolve();	
-		}).catch(err => reject(err));	
-	});	
+			+ ' node(s) and ' + result.summary.counters._stats.relationshipsDeleted + ' relationship(s).');
+			//when old nodes are deleted: create new ones
+			stock_universe.forEach(function(symbol, i){
+				let symbol_db = symbol.replace('.', '_')
+				let company = chartData[symbol].company.companyName;
+				let industry = chartData[symbol].company.industry;
+				let sector = chartData[symbol].company.sector;
+				let tags = chartData[symbol].company.tags;
+				
+				executeDbQueryWithSession(`CREATE (${symbol_db}:stock {symbol: $symbolParam, company: $companyParam, industry: $industryParam, sector: $sectorParam, tags: $tagsParam})`, 
+				{symbolParam: symbol_db, companyParam: company, industryParam: industry, sectorParam: sector, tagsParam: tags}, session)
+				.then(result => {
+					finished_nodes_db++;
+					
+					//when all nodes are inserted: resolve
+					if(finished_nodes_db === stock_universe.length){
+						session.close();
+						console.log('created stock nodes');
+						results.push('Created ' + finished_nodes_db + ' nodes.');
+						resolve();
+					}	
+				}).catch(err => reject(err));
+			});
+		}).catch(err => reject(err));	 
+	});		
 }
 
 																						   
-function createCorrelatoinRelationshipsInDb(stock_universe, chartData, results){  
-	
+function createCorrelatoinRelationshipsInDb(stock_universe, chartData, results){
 	return new Promise(function(resolve, reject) {
-		var timestamp = Date.now();
-		var started = 0;
-		var finished_corr = 0;
-		var finished_db = 0;
+		var start = 0;
+		var end = 0;
+		var batch_size_correlation = stock_universe.length - 1;
+		//calculate how many loops can be done without exceeding the batch limit
+		while((end < (stock_universe.length - 1)) && (batch_size_correlation < BATCH_SIZE_COR)){
+			end++;
+			batch_size_correlation = batch_size_correlation + (stock_universe.length - end - 1);	
+		}
 		console.log('Creating correlation relationships');
+		createRelationshipBatch(stock_universe, chartData, start, end, batch_size_correlation, 1, results).then(function(result){
+			console.log('Finished inserting correlation relationships');
+			resolve();
+		}).catch(err => reject(err));
+	});
+	
 
-		for (let i = 0; i < stock_universe.length - 1; i++){	
+}
+
+function createRelationshipBatch(stock_universe, chartData, start, end, batch_size_correlation, batch_no, results){
+		return new Promise(function(resolve, reject) {
+		var timestamp = Date.now();
+		var finished_cor = 0;
+		var finished_db = 0;
+		var session = driver.session();
+		console.log('Starting Batch ' + batch_no + '.  Batch Size: ' + batch_size_correlation);
+
+		for (let i = start; i <= end; i++){	
 			for (let j = i+1; j < stock_universe.length; j++){
 				let symbol1=stock_universe[i];
 				let symbol2=stock_universe[j];
 				let corrPromise = spearmanCoefficient(chartData[symbol1].chart, chartData[symbol2].chart, symbol1, symbol2);
-				started++;
-				timedLog('started: ' + started + ', finished_corr: ' + finished_corr + ', finished_db: ' + finished_db + ', total: ' + stock_universe.length * (stock_universe.length - 1) / 2);
 				corrPromise.then(function result(corr){
-					  finished_corr++;
-					  timedLog('started: ' + started + ', finished_corr: ' + finished_corr + ', finished_db: ' + finished_db + ', total: ' + stock_universe.length * (stock_universe.length - 1) / 2);
-					  executeDbQuery(`MATCH (a:stock),(b:stock)` +
-				`WHERE a.symbol = '${symbol1}' AND b.symbol = '${symbol2}'` +
-										`CREATE (a)-[r:RELTYPE { correlation: ${corr} }]->(b)`, {})
+					  finished_cor++; 
+					  executeDbQueryWithSession(`MATCH (a:stock),(b:stock)` +
+										`WHERE a.symbol = '${symbol1}' AND b.symbol = '${symbol2}'` +
+										`CREATE (a)-[r:RELTYPE { correlation: ${corr} }]->(b)`, {}, session)
 					  .then(function(result){
 						  finished_db++;
-						  timedLog('started: ' + started + ', finished_corr: ' + finished_corr + ', finished_db: ' + finished_db + ', total: ' + stock_universe.length * (stock_universe.length - 1) / 2);
-							
-						  if(finished_db === stock_universe.length * (stock_universe.length - 1) / 2){
-							  console.log('Inserted ' + finished_db + ' relationships. (universe size: ' + stock_universe.length + ')');
-							  results.push('Created ' + finished_db + ' relationships.');
-							  resolve(result);
+						//all db insertion for this batch finished
+						  if(finished_db === batch_size_correlation){
+							  console.log('Finished Batch: ' + batch_no + ': ' + start + '-' + end + '/' + stock_universe.length + '. Inserted ' + finished_db + ' relationship(s).');
+							  results.push('Executed Batch: ' + batch_no + '. Inserted ' + finished_db + ' relationship(s).');
+							  session.close();
+							  //if this isn't the last batch: start next one
+							  if(end < stock_universe.length - 1){
+									let start_new = end + 1;
+									let end_new = start_new;
+									let batch_size_new = stock_universe.length - end_new - 1;
+									//calculate how many loops can be done without exceeding the batch limit
+									while((end_new < stock_universe.length - 1) && (batch_size_new < BATCH_SIZE_COR)){
+										end_new++;
+										batch_size_new = batch_size_new + (stock_universe.length - end_new - 1);	
+									}
+								  createRelationshipBatch(stock_universe, chartData, start_new, end_new, batch_size_new, ++batch_no, results).then(function(){
+									 resolve(); 
+								  }).catch(err => reject(err));
+								  
+							  } else {
+								 console.log('Resolving batches...');
+								 resolve();	  
+							  }
+							  
 						  }
-						  
-						  
-					  }).catch(err => reject(err));
-					  
-					  
+					  }).catch(err => reject(err));  
 				}).catch(err => reject(err));
 			}
 		}
 	});
+	
 }
+	
+	
+	
+
 
 function timedLog(string){
 	let now = Date.now();
@@ -238,7 +283,7 @@ function spearmanCoefficient(chart_x, chart_y, symbol_x, symbol_y){
 
 function executeDbQuery(query, parameters){
 	return new Promise(function(resolve, reject){
-		var session = driver.session();;
+		var session = driver.session();
 		
 		session
 		  .run(query, parameters)
@@ -247,6 +292,18 @@ function executeDbQuery(query, parameters){
 			 resolve(result);
 		  }).catch(function (err) {
 			session.close();
+			reject(err);
+		  });
+	});
+}
+
+function executeDbQueryWithSession(query, parameters, session){
+	return new Promise(function(resolve, reject){
+		session
+		  .run(query, parameters)
+		  .then(function (result) {
+			 resolve(result);
+		  }).catch(function (err) {
 			reject(err);
 		  });
 	});

@@ -1,89 +1,94 @@
 'use strict';
+  const driver = neo4j.v1.driver("bolt://localhost", 
+				   neo4j.v1.auth.basic("readonly", "geheim"));
+  const session = driver.session();
+  var graph_elem;
+  var Graph = ForceGraph3D();
+  var graphData;
 	  
-	  const DEFAULT_SYMBOLS = ['GS', 'MS', 'JPM', 'WFC', 'C', 'BAC', 'BCS', 'DB', 'CS', 'RBS', 'AAPL', 'GOOGL', 'MSFT', 'AMZN', 'FB', 'TWTR', 'NFLX', 'SNAP', 'SPOT', 'DBX', 'SQ', 'SFIX', 'BABA', 'INTC', 'AMD', 'NVDA', 'ORCL'];
-	  const UNIVERSE = symbolsFromQueryParams() || DEFAULT_SYMBOLS;
-      const BATCH_SIZE = 100;
-      const BASE_URL = 'https://api.iextrading.com/1.0/stock/market/batch';
-	  var numberOfBatches = 0;
-	  var batchReadyCounter = 0;
-	  var chartData = {};
-	  var corrMatrix = [];
-	  var containerDiv;
-	  var updatedDiv;
+  window.onload = function start(){
+	  graph_elem = document.getElementById('3d-graph');
+	  createMenue();
+	  createGraph();
+
+  }
+
+  function createMenue(){
+	var sel_coloring = document.getElementById("coloring");
+	sel_coloring.options[sel_coloring.options.length] = new Option('sector');
+	sel_coloring.options[sel_coloring.options.length] = new Option('industry');
 	  
-	  window.onload = function start(){
-		  
-		  containerDiv = document.querySelector('.stocks-container');
+  }
 
-		  loadChartData();
-	  }
-
-      function loadChartData() {
-		batchReadyCounter = 0;
-        numberOfBatches = Math.ceil(UNIVERSE.length / BATCH_SIZE);
-
-        for (let i = 0; i < numberOfBatches; i++) {
-          let symbolsBatch = UNIVERSE.slice(i * BATCH_SIZE, (i + 1) * BATCH_SIZE);
-          loadBatch(symbolsBatch);
-        }
-
-      }
+  
+  function createGraph(){
 	  
-	  function loadBatch(symbols){
-		  let filters = ['date', 'close', 'changePercent'];
-		  let url = `${BASE_URL}?types=chart&range=5y&symbols=${symbols.join(',')}&filter=${filters.join(',')}`;
-		  
-		  fetch(url).then(response => response.json()).then(json => {
-				Object.assign(chartData, json);
-				
-				if(++batchReadyCounter === numberOfBatches){
-					createMatrix();
-				}
-		  })
-	  }
-	                                                                                                   {}
-	  function createMatrix(){                                                                         {}
-		  
-		console.log(chartData);
-		
-        UNIVERSE.forEach((symbol1, i) => {
-			UNIVERSE.forEach((symbol2, j) => {
-					if(j >i){
-						let corr = spearmanCorrelation(chartData[symbol1].chart, chartData[symbol2].chart);
-						corrMatrix.push([symbol1, symbol2, corr]);
-					}
-					if(j===i){
-						corrMatrix.push([symbol1, symbol2, 0]);
-						
-					}
-				
-			});
-		});
-		
-		console.log(corrMatrix);
-	  }
+	
+	const start = new Date();
+
+	session
+	.run('MATCH (n)-[r]-(m)' +
+		//` WHERE (n.sector in ['Technology', 'Healthcare', 'Energy'])` +
+		//` AND (m.sector in ['Technology', 'Healthcare', 'Energy'])` +
+		' WHERE r.correlation > 0.95' +
+		' RETURN { id: id(n), sector:n.sector, symbol:n.symbol, industry:n.industry } as source, { id: id(m), sector:m.sector, symbol:m.symbol, industry:m.industry } as target')
+	.then(function (result) {
+	  const nodes = {}
+	  
+	  // turn records into list of link-objects
+	  const links = result.records.map(r => 
+		  { var source = r.get('source');source.id = source.id.toNumber();
+           nodes[source.id] = source;
+	       var target = r.get('target');target.id = target.id.toNumber();
+           nodes[target.id] = target;
+	       return {source:source.id,target:target.id}
+					});
+					
+	  session.close();
+	  
+	  // convert nodes object to array
+	  const nodes_array = Object.values(nodes);  
+	  console.log(links.length + ' links and ' + nodes_array.length + ' nodes loaded in '  + (new Date()-start) + ' ms.');
+	  
+	  // combine nodes and links to graph
+	  graphData = { nodes: nodes_array, links: links};
+	  
+	  //draw graph
+	  Graph(graph_elem)
+	    .enableNodeDrag(false)
+        .onNodeHover(node => graph_elem.style.cursor = node ? 'pointer' : null)
+		.d3AlphaDecay(0.01)
+		.graphData(graphData)
+		.nodeAutoColorBy('sector')
+		.nodeLabel(node => `${node.symbol} (${node.sector})`);
+	 
+	})
+	.catch(function (error) {
+	  console.log(error);
+	});
+
+  }
+  
+  function onSelectColoring(){
+	  
+	  var color_by = document.getElementById("coloring").value;
+	  console.log('changing coloring to ' + color_by);
+	  Graph(graph_elem)
+		.nodeAutoColorBy(color_by)
+		.graphData(graphData);
 	  
 	  
-	  function spearmanCorrelation(data1, data2){
-		  return data1[0].close;
-	  }
+	  
+	  
+  }
+	
 
-      function symbolsFromQueryParams() {
-        if (!window.location.search) return;
+	
 
-        let params = new URLSearchParams(window.location.search);
-        let symbols_param = params.get('symbols');
-		
-		if (symbols_param){
-			return symbols_param.split(',')
-		}
 
-        return [];
-      }
 
-      function symbolUrl(symbol) {
-        return `https://iextrading.com/apps/stocks/${symbol}`;
-      }
+   
+      
 
 
    
