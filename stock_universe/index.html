@@ -8,17 +8,48 @@
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<script src="https://cdn.rawgit.com/neo4j/neo4j-javascript-driver/1.4.1/lib/browser/neo4j-web.min.js"></script>
 	<script src="https://unpkg.com/3d-force-graph"></script>
+	<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 	<script src="code.js"></script>
     <meta name="description" content="A free, lightweight, blazing-fast page to get stock quotes using the IEX API">
 
   </head>
 
   <body>
+  <!--
 	<div id="menue" >
 		<label for="coloring">Coloring</label>
 		<select id="coloring" onchange="onSelectColoring()"></select>
 	</div>
-    <div id="3d-graph"></div>
+	!-->
+	<div id="3d-graph" ></div>
+
+	<div id="tradingview" class="tradingview-widget-container">
+	  <div id="basic-area-chart"></div>
+	  <script type="text/javascript">
+	  function newWidget(symbol){
+		new TradingView.widget(
+		  {
+		  "container_id": "basic-area-chart",
+		  "width": 400,
+		  "height": 300,
+		  "symbol": symbol,
+		  "interval": "D",
+		  "timezone": "exchange",
+		  "theme": "Light",
+		  "style": "3",
+		  "toolbar_bg": "#f1f3f6",
+		  "hide_top_toolbar": true,
+		  "save_image": false,
+		  "locale": "en"
+		}
+		  );
+	  
+	  };
+	  
+	  </script>
+	</div>
+
+    
 
     <p class="attribution">
       Data provided for free by <a href="https://iextrading.com/developer/" target="_blank">IEX</a>.
