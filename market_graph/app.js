@@ -23,17 +23,18 @@ app.get("/matrix", (req, res, next) => {
 	 } */
 	 
 	 loadSymbols().then(stock_universe => {
-		 //load stock Data, calculateMatrix
-		 createGraphForUniverseInDb(stock_universe).then(function(results){
+			//load stock Data, calculateMatrix
+			createGraphForUniverseInDb(stock_universe).then(function(results){
 			 
 			 //json response with matrix
 			driver.close();
-			var response = {};
-			response['messages'] = results;
-			response['universe'] = stock_universe;
-			response['universe_size'] = stock_universe.length;
-			res.json(response);
-		 }).catch(err => reject(err));
+		 });
+		 
+		 var response = {};
+			
+		response['universe'] = stock_universe;
+		response['universe_size'] = stock_universe.length;
+		res.json(response);
 		 
 
 	 }).catch(function(err){
@@ -50,13 +51,14 @@ app.listen(3000, () => {
 
 function loadSymbols(){
 	return new Promise(function(resolve, reject) {
+		var regex = '^[A-Z,-,.]*$';
 		let url = 'https://api.iextrading.com/1.0/ref-data/symbols';
 		fetch(url).then(response => response.json()).then(json => {
 			
 			var symbols = [];
 			var prefixes = [];
 			json.forEach(security => {
-				if(security.type === 'cs'){
+				if(security.type === 'cs' && security.symbol.match(regex)){
 					if(security.symbol.includes('-')){
 						let prefix = security.symbol.substr(0, security.symbol.indexOf('-'));
 						if(!prefixes.includes(prefix) && !symbols.includes(prefix)){
@@ -94,13 +96,12 @@ function createGraphForUniverseInDb(stock_universe) {
 		var batchCounter = 0;
 		
 		//get stock data in batches
-		console.log('loading data for stock universe: ' + stock_universe.join(','));
+		console.log('loading data for stock universe of size: ' + stock_universe.length);
 		let numberOfBatches = Math.ceil(stock_universe.length / BATCH_SIZE);
 		for (let i = 0; i < numberOfBatches; i++) {
 		  let symbolsBatch = stock_universe.slice(i * BATCH_SIZE, (i + 1) * BATCH_SIZE);
 		  let filters = ['companyName', 'industry', 'sector', 'tags', 'date', 'close', 'changePercent'];
 		  let url = `${BASE_URL}?types=company,chart&range=5y&symbols=${symbolsBatch.join(',')}&filter=${filters.join(',')}`;
-		  console.log('batch url: ' + url);
 	  
 		  fetch(url).then(response => response.json()).then(json => {
 				//merge json-data in one object: chartData
@@ -113,12 +114,12 @@ function createGraphForUniverseInDb(stock_universe) {
 						if (!chartData[stock_universe[k]]) {
 							console.log('Removing symbol ' + stock_universe[k] + ', it is not supported by IEX');
 							stock_universe.splice(k, 1);
-						} else if (chartData[stock_universe[k].length < 200]){
+						} else if (chartData[stock_universe[k]].chart.length < 200){
 							console.log('Removing symbol ' + stock_universe[k] + ', the stock price is available for less than 200 days');
 							stock_universe.splice(k, 1);
 						}
 					}
-					console.log('cleaning done');
+					console.log('cleaning done. New stock universe size: ' + stock_universe.length);
 					
 					//then create nodes in db
 					createStockNodesInDb(stock_universe, chartData, results).then(result => {
@@ -138,7 +139,6 @@ function createGraphForUniverseInDb(stock_universe) {
 
 function createStockNodesInDb(stock_universe, chartData, results){
 	return new Promise(function(resolve, reject){
-		console.log('Creating stock nodes in db');
 		var session = driver.session();
 		var finished_nodes_db = 0;
 		
@@ -149,15 +149,16 @@ function createStockNodesInDb(stock_universe, chartData, results){
 			results.push('Deleted ' + result.summary.counters._stats.nodesDeleted 
 			+ ' node(s) and ' + result.summary.counters._stats.relationshipsDeleted + ' relationship(s).');
 			//when old nodes are deleted: create new ones
+			console.log('Creating stock nodes in db');
 			stock_universe.forEach(function(symbol, i){
-				let symbol_db = symbol.replace('.', '_')
+				let symbol_db = symbol.replace('.','_').replace('-','_');
 				let company = chartData[symbol].company.companyName;
 				let industry = chartData[symbol].company.industry;
 				let sector = chartData[symbol].company.sector;
 				let tags = chartData[symbol].company.tags;
 				
 				executeDbQueryWithSession(`CREATE (${symbol_db}:stock {symbol: $symbolParam, company: $companyParam, industry: $industryParam, sector: $sectorParam, tags: $tagsParam})`, 
-				{symbolParam: symbol_db, companyParam: company, industryParam: industry, sectorParam: sector, tagsParam: tags}, session)
+				{symbolParam: symbol, companyParam: company, industryParam: industry, sectorParam: sector, tagsParam: tags}, session)
 				.then(result => {
 					finished_nodes_db++;
 					
@@ -201,7 +202,7 @@ function createRelationshipBatch(stock_universe, chartData, start, end, batch_si
 		var finished_cor = 0;
 		var finished_db = 0;
 		var session = driver.session();
-		console.log('Starting Batch ' + batch_no + '.  Batch Size: ' + batch_size_correlation);
+		console.log('Starting Batch ' + batch_no + ' (' + (start + 1) + '-' + (end + 1) + '/' + stock_universe.length + '). Batch Size: ' + batch_size_correlation);
 
 		for (let i = start; i <= end; i++){	
 			for (let j = i+1; j < stock_universe.length; j++){
@@ -217,7 +218,7 @@ function createRelationshipBatch(stock_universe, chartData, start, end, batch_si
 						  finished_db++;
 						//all db insertion for this batch finished
 						  if(finished_db === batch_size_correlation){
-							  console.log('Finished Batch: ' + batch_no + ': ' + start + '-' + end + '/' + stock_universe.length + '. Inserted ' + finished_db + ' relationship(s).');
+							  console.log('Finished Batch ' + batch_no + ' (' + (start + 1) + '-' + (end + 1) + '/' + stock_universe.length + '). Inserted ' + finished_db + ' relationship(s).');
 							  results.push('Executed Batch: ' + batch_no + '. Inserted ' + finished_db + ' relationship(s).');
 							  session.close();
 							  //if this isn't the last batch: start next one
