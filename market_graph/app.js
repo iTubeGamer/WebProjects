@@ -78,7 +78,7 @@ function createGraphForUniverseInDb(stock_universe) {
 		loadDataFromIEX(stock_universe)
 		.then(result => cleanStockUniverse(result))
 		.then(result => createStockNodesInDb(result))
-		.then(result => createCorrelatoinRelationshipsInDb(result))
+		.then(result => createCorrelatoinRelationshipsInDb2(result))
 		.then(result => resolve(result.messages))
 		.then(driver.close())
 		.catch(err => reject(err));
@@ -143,11 +143,11 @@ function createStockNodesInDb(stockResult){
 		//remove all nodes
 		clearDb(messages)
 		//create new nodes
-		.then(insertNodes(stockResult))
+		.then(result => insertNodes(stockResult))
 		//createIndex
-		.then(createStockSymbolIndex())
+		.then(result => createStockSymbolIndex())
 		//resolve
-		.then(resolve(stockResult))
+		.then(result => resolve(stockResult))
 		.catch(err => reject(err));	 
 	});		
 }
@@ -215,6 +215,46 @@ function createCorrelatoinRelationshipsInDb(result){
 			console.log('Finished inserting correlation relationships');
 			resolve(result);
 		}).catch(err => reject(err));
+	});
+	
+
+}
+
+function createCorrelatoinRelationshipsInDb2(result){
+	let stock_universe = result.stockUniverse;
+	let chartData = result.chartData;
+	let messages = result.messages;
+	
+	return new Promise(function(resolve, reject) {
+		console.log('Creating correlation relationships');
+		var session = driver.session();
+		
+		(async function loop() {
+		for (let i = 0; i < stock_universe.length; i++) {
+			console.log('starting loop ' + (i+1) + ' from ' + stock_universe.length);
+			for (let j = i+1; j < stock_universe.length; j++){
+				
+				let symbol1=stock_universe[i];
+				let symbol2=stock_universe[j];
+				
+				//calculate correlation
+				let corr = await spearmanCoefficient(chartData[symbol1].chart, chartData[symbol2].chart, symbol1, symbol2)
+				//insert into db
+				.then(corr => executeDbQueryWithSession('MATCH (a:stock),(b:stock)' +
+										' WHERE a.symbol = $symbolAParam AND b.symbol = $symbolBParam' +
+										' CREATE (a)-[r:RELTYPE { correlation: $corrParam }]->(b)', {symbolAParam: symbol1, symbolBParam: symbol2, corrParam: corr}, session))
+				.catch(err => reject(err));
+			}
+			console.log('finished loop ' + (i+1) + ' from ' + stock_universe.length);
+			
+		}
+		
+		session.close();
+		console.log('Finished inserting correlation relationships');
+		resolve(result);
+		
+		})();
+
 	});
 	
 
@@ -352,15 +392,11 @@ function executeDbQuery(query, parameters){
 }
 
 function executeDbQueryWithSession(query, parameters, session){
-	return new Promise(function(resolve, reject){
-		session
-		  .run(query, parameters)
-		  .then(function (result) {
-			 resolve(result);
-		  }).catch(function (err) {
-			reject(err);
-		  });
-	});
+	return session.run(query, parameters);		  
+}
+
+function executeDbQueryWithTransaction(query, parameters, tx){
+	
 }
 	
 	
