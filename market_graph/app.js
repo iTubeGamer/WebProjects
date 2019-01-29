@@ -18,15 +18,15 @@ const BATCH_SIZE_COR = 1000;
 var app = express();
 
 app.get("/matrix", (req, res, next) => {
-	 
+	 console.log('processing /matrix request...');
 	 loadSymbols()
 	 .then(stock_universe => createGraphForUniverseInDb(stock_universe))
-	 .then(messages => res.json(messages))
+	 .then(messages => {res.json(messages); console.log('anwered /matrix request')})
 	 .catch(function(err){
 		 console.error(err);
 		 res.json('An internal error occured.');
 	 });
-
+	
 });
 
 app.listen(3000, () => {
@@ -34,8 +34,8 @@ app.listen(3000, () => {
 });
 
 function loadSymbols(){
-	return new Promise(function(resolve, reject){resolve(DEFAULT_UNIVERSE)});
-	/*
+	//return new Promise(function(resolve, reject){resolve(DEFAULT_UNIVERSE)});
+	
 	return new Promise(function(resolve, reject) {
 		var regex = '^[A-Z,-,.]*$';
 		let url = 'https://api.iextrading.com/1.0/ref-data/symbols';
@@ -70,7 +70,7 @@ function loadSymbols(){
 		}).catch(err => reject(err));
 		
 	});	
-	*/
+	
 }
 
 function createGraphForUniverseInDb(stock_universe) {
@@ -135,54 +135,65 @@ function cleanStockUniverse(result){
 	});
 }
 
-function createStockNodesInDb(stockResult){
+function createStockNodesInDb(stockResult){	
+	
+	return new Promise(function(resolve, reject){
+		let messages = stockResult.messages;
+		
+		//remove all nodes
+		clearDb(messages)
+		//create new nodes
+		.then(insertNodes(stockResult))
+		//createIndex
+		.then(createStockSymbolIndex())
+		//resolve
+		.then(resolve(stockResult))
+		.catch(err => reject(err));	 
+	});		
+}
+
+function insertNodes(stockResult){
 	let stock_universe = stockResult.stockUniverse;
 	let chartData = stockResult.chartData;
 	let messages = stockResult.messages;
-	return new Promise(function(resolve, reject){
-		var session = driver.session();
-		var finished_nodes_db = 0;
-		var err_occured = false;
-		var errors = [];
-		
-		//remove all nodes
-		executeDbQuery('MATCH (n) DETACH DELETE n', {})
-		.then(function(result) {
-			console.log('deleted all nodes');
-			messages.push('Deleted ' + result.summary.counters._stats.nodesDeleted 
-			+ ' node(s) and ' + result.summary.counters._stats.relationshipsDeleted + ' relationship(s).');
-			//when old nodes are deleted: create new ones
-			console.log('Creating stock nodes in db');
-			stock_universe.forEach(function(symbol, i){
-				let symbol_db = symbol.replace('.','_').replace('-','_');
-				let company = chartData[symbol].company.companyName;
-				let industry = chartData[symbol].company.industry;
-				let sector = chartData[symbol].company.sector;
-				let tags = chartData[symbol].company.tags;
-				
-				executeDbQueryWithSession(`CREATE (${symbol_db}:stock {symbol: $symbolParam, company: $companyParam, industry: $industryParam, sector: $sectorParam, tags: $tagsParam})`, 
-				{symbolParam: symbol, companyParam: company, industryParam: industry, sectorParam: sector, tagsParam: tags}, session)
-				.then(result => {
-					finished_nodes_db++;
-					
-					//when all nodes are inserted: create index
-					if(finished_nodes_db === stock_universe.length){
-						executeDbQueryWithSession('CREATE INDEX ON :stock(symbol)', {}, session)
-						.then(result => {
-							//when index is created: resolve
-							session.close();
-							console.log('created stock nodes');
-							messages.push('Created ' + finished_nodes_db + ' nodes.');
-							if(err_occured){
-								reject(errors);
-							}
-							resolve(stockResult);
-						}).catch(err => reject(err));	
+	
+	let err_occured = false;
+	let errors = [];
+	let session = driver.session();
+	let finished_nodes_db = 0;	
+	
+	return new Promise(function(resolve, reject){	
+		console.log('Creating stock nodes in db');
+		stock_universe.forEach(function(symbol, i){
+			insertSymbolNode(symbol, chartData, session)
+			.then(result => {
+				finished_nodes_db++;
+				//when all nodes are inserted: resolve
+				if(finished_nodes_db === stock_universe.length){
+					session.close();
+					console.log('created stock nodes');
+					messages.push('Created ' + finished_nodes_db + ' nodes.');
+					if(err_occured){
+						reject(errors);
+					} else {
+						resolve();
 					}	
-				}).catch(err => {err_occured = true; errors.push(err);});
-			});
-		}).catch(err => reject(err));	 
-	});		
+				}	
+			}).catch(err => {err_occured = true; errors.push(err);});
+		});	
+	});
+}
+
+function insertSymbolNode(symbol, chartData, session){
+	let symbol_db = symbol.replace('.','_').replace('-','_');
+	let company = chartData[symbol].company.companyName;
+	let marketcap = chartData[symbol].stats.marketcap;
+	let industry = chartData[symbol].company.industry;
+	let sector = chartData[symbol].company.sector;
+	let tags = chartData[symbol].company.tags;
+				
+	return executeDbQueryWithSession(`CREATE (${symbol_db}:stock {symbol: $symbolParam, company: $companyParam, marketcap: $marketcapParam, industry: $industryParam, sector: $sectorParam, tags: $tagsParam})`,
+										{symbolParam: symbol, companyParam: company, marketcapParam: marketcap, industryParam: industry, sectorParam: sector, tagsParam: tags}, session)	
 }
 																					   
 function createCorrelatoinRelationshipsInDb(result){
@@ -310,6 +321,18 @@ function spearmanCoefficient(chart_x, chart_y, symbol_x, symbol_y){
 		});
 		
 	}
+}
+
+function clearDb(messages){
+	var promise = executeDbQuery('MATCH (n) DETACH DELETE n', {})
+					.then(result => messages.push('Deleted ' + result.summary.counters._stats.nodesDeleted 
+											+ ' node(s) and ' + result.summary.counters._stats.relationshipsDeleted + ' relationship(s).'));
+	console.log('Deleting all entries from db');
+	return promise;
+}
+
+function createStockSymbolIndex(){
+	return executeDbQuery('CREATE INDEX ON :stock(symbol)', {});
 }
 
 function executeDbQuery(query, parameters){
