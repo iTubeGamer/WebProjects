@@ -5,7 +5,7 @@ const Client = require('node-rest-client').Client;
 const express = require("express");
 const querystring = require('querystring');
 const config = require('./config');
-const retry=20000;
+const retry=60000;
 const pause=1000;
 const base_uri_ft_article = 'https://www.ft.com';
 const base_uri_ft_search = 'https://www.ft.com/search?q=';
@@ -43,21 +43,20 @@ var parser = new htmlparser.Parser({
 }, {decodeEntities: true});
 
 
-async function checkArticles(){	
+function checkArticles(){	
+	let start = Date.now();
+	console.log('Starting article-check');
 	for(let i=0; i < config.searchterms.length; i++){
 		current_searchterm = config.searchterms[i];
-		await checkBySearchterm(config.searchterms[i]);	
-	}		
+		checkBySearchterm(config.searchterms[i]);	
+	}
+	console.log('Finished article-check. Time: ' + ((Date.now() - start) / 1000) + 'sec');
 }
 
 function checkBySearchterm(searchterm){
-	return new Promise(function(resolve, reject){	
-		console.log('Starting check for: ' + searchterm);
-		client.get(base_uri_ft_search + querystring.escape(searchterm) + suffix_ft_search, (data, response) => {
-			console.log('parsing...');
-			parser.write(data);
-			resolve();
-		});
+	console.log('Starting check for: ' + searchterm);
+	client.get(base_uri_ft_search + querystring.escape(searchterm) + suffix_ft_search, (data, response) => {
+		parser.write(data);
 	});
 }
 
