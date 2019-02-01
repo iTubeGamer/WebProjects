@@ -5,6 +5,7 @@
 	"main": "app.js",
 	"dependencies": {
 		"htmlparser2": "latest",
-		"node-rest-client": "latest"
+		"node-rest-client": "latest",
+		"express": "latest"
 	}
 }
