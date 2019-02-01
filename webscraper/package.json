@@ -1,0 +1,10 @@
+{
+	"name": "ftwebscaping",
+	"version": "0.0.1",
+	"description": "Get notified, when new financial-times articles are released on your stock",
+	"main": "app.js",
+	"dependencies": {
+		"htmlparser2": "latest",
+		"node-rest-client": "latest"
+	}
+}
