@@ -16,16 +16,28 @@ var link_incoming = false;
 var article_id;
 var current_searchterm;
 var values = loadValues();
+var new_last_checked = 0;
 
 setInterval(checkArticles, retry);
 
 var parser = new htmlparser.Parser({
 	onopentag: function(name, attribs){
         if(name === "time" 
-			&& attribs.class === "o-teaser__timestamp-date"
-			&& Date.parse(attribs.datetime) > values.last_checked[current_searchterm]){
-            client.get(config.base_uri_telegram + querystring.escape('neuer Artikel zu' + current_searchterm + ': ' + base_uri_ft_article + article_id), (data) => {});
-			console.log('neuer FT-Artikel zu ' + current_searchterm + ': ' + base_uri_ft_article + article_id);
+			&& attribs.class === "o-teaser__timestamp-date"){
+			let article_time = Date.parse(attribs.datetime);
+			if( values.last_checked[current_searchterm] === -1){
+				values.last_checked[current_searchterm] = article_time;
+				parser.parseComplete();
+			} else if( article_time > values.last_checked[current_searchterm]){
+				client.get(config.base_uri_telegram + querystring.escape('neuer Artikel zu' + current_searchterm + ': ' + base_uri_ft_article + article_id), (data) => {});
+				console.log('neuer FT-Artikel zu ' + current_searchterm + ': ' + base_uri_ft_article + article_id);
+				if(article_time > new_last_checked){
+					new_last_checked = article_time;
+					};
+			} else {
+				console.log('Article already checked, finished: ' + current_searchterm);
+				parser.parseComplete();
+			}
 		}	
 		if(name === "div" && attribs.class ==="o-teaser__heading"){
 			link_incoming = true;
@@ -37,9 +49,15 @@ var parser = new htmlparser.Parser({
 	},
 	onclosetag: function(name, attribs){
 		if(name === "main"){
-			values.last_checked[current_searchterm]=Date.now();
-			console.log('Done with: ' + current_searchterm);
+			parser.parseComplete();
 		}
+	},
+	onend: function(){
+		if(new_last_checked > 0){
+			values.last_checked[current_searchterm] = new_last_checked;
+			new_last_checked = 0;
+		}
+		console.log('Done with: ' + current_searchterm);
     }
 }, {decodeEntities: true});
 
@@ -54,6 +72,7 @@ function checkArticles(){
 			current_searchterm = values.searchterms[i];
 			await checkBySearchterm(values.searchterms[i]);	
 		}
+		saveValues();
 		console.log('Finished article-check. Time: ' + ((Date.now() - start) / 1000) + 'sec');
 	});
 }
@@ -74,18 +93,19 @@ function parseTelegramUpdates(response){
 	let updated = [];
 	let removed = [];
 	while(i >= 0 && response.result[i].update_id !== values.updateId){
-		if(response.result[i].message.text.startsWith('/add')){
+		if(response.result[i].message.text.startsWith('/add') && response.result[i].message.text.length >= 8){
 			let new_searchterm = response.result[i].message.text.substring(5);
 			values.searchterms.push(new_searchterm);
-			values.last_checked[new_searchterm] = Date.now();
+			values.last_checked[new_searchterm] = -1;
 			console.log('added new searchterm: ' + new_searchterm);
 			updated.push(new_searchterm);
 		}
-		if(response.result[i].message.text.startsWith('/remove')){
+		if(response.result[i].message.text.startsWith('/remove') && response.result[i].message.text.length >= 11){
 			let delete_searchterm = response.result[i].message.text.substring(8);
-			removeSearchterm(delete_searchterm);
-			console.log('removed searchterm: ' + delete_searchterm);
-			removed.push(delete_searchterm);
+			if(removeSearchterm(delete_searchterm)){
+				console.log('removed searchterm: ' + delete_searchterm);
+				removed.push(delete_searchterm);
+			}
 		}
 		i--;
 	}
@@ -97,15 +117,18 @@ function parseTelegramUpdates(response){
 		client.get(config.base_uri_telegram + querystring.escape('Gelöscht: ' + removed.join(', ')), (data) => {});
 	}
 	if(removed.length > 0 || updated.length > 0){
-		saveValues();
 		client.get(config.base_uri_telegram + querystring.escape('Neue Suchanfragen: ' + values.searchterms.join(', ')), data => {});
 	}
 }
 
 function removeSearchterm(searchterm){
-	delete values.last_checked[searchterm];
 	var index = values.searchterms.indexOf(searchterm);
-	if (index > -1) values.searchterms.splice(index, 1);
+	if (index > -1){
+		values.searchterms.splice(index, 1);
+		delete values.last_checked[searchterm];
+		return true;
+	}
+	return false;
 }
 
 
