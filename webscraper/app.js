@@ -65,7 +65,7 @@ var parser = new htmlparser.Parser({
 function checkArticles(){
 	var start = Date.now();
 	console.log('<---Updating searchterms--->');
-	client.get(config.uri_telegram_update, async function(response, data){	
+	client.get(config.uri_telegram_update + (values.updateId + 1), async function(response, data){	
 		console.log('Starting article-check');
 		parseTelegramUpdates(response);
 		for(let i=0; i < values.searchterms.length; i++){
@@ -92,24 +92,28 @@ function parseTelegramUpdates(response){
 	let i = response.result.length - 1;
 	let updated = [];
 	let removed = [];
-	while(i >= 0 && response.result[i].update_id !== values.updateId){
-		if(response.result[i].message.text.startsWith('/add') && response.result[i].message.text.length >= 8){
-			let new_searchterm = response.result[i].message.text.substring(5);
+	
+	response.result.forEach(result => {
+		let text = result.message.text;
+		if(text.startsWith('/add') && text.length >= 8){
+			let new_searchterm = text.substring(5);
 			values.searchterms.push(new_searchterm);
 			values.last_checked[new_searchterm] = -1;
 			console.log('added new searchterm: ' + new_searchterm);
 			updated.push(new_searchterm);
 		}
-		if(response.result[i].message.text.startsWith('/remove') && response.result[i].message.text.length >= 11){
-			let delete_searchterm = response.result[i].message.text.substring(8);
+		if(text.startsWith('/remove') && text.length >= 11){
+			let delete_searchterm = text.substring(8);
 			if(removeSearchterm(delete_searchterm)){
 				console.log('removed searchterm: ' + delete_searchterm);
 				removed.push(delete_searchterm);
 			}
-		}
-		i--;
+		}	
+	});
+	if(response.result.length > 0){
+		values.updateId = response.result[response.result.length - 1].update_id;
 	}
-	values.updateId = response.result[response.result.length - 1].update_id;
+		
 	if(updated.length > 0){
 		client.get(config.base_uri_telegram + querystring.escape('Hinzugefügt: ' + updated.join(', ')), (data) => {});
 	}
