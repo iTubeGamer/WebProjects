@@ -1,6 +1,6 @@
 'use strict';
   const driver = neo4j.v1.driver("bolt://81.169.223.244:7687/", 
-				   neo4j.v1.auth.basic("neo4j", "***"));
+				   neo4j.v1.auth.basic("readonly", "#p1A417dzOtJ"));
   //const portfolio = ["FB", "BABA", "TM", "AABA", "HSBC", "BLK", "MS", "MSFT", "CSCO", "V", "MA", "ISRG", "PYPL", "ADBE"];
   const portfolio_array = [['FB', 1000], ['BABA', 350], ['TM', 30000], ['AABA', 100], ['HSBC', 2000], ['BLK', 3000], ['MS', 800], ['MSFT', 9960], ['CSCO', 1700], ['V', 1300], ['MA', 1050], ['ISRG', 2300], ['PYPL', 1440], ['ADBE', 700]];
   const portfolio_avg = 1000;
